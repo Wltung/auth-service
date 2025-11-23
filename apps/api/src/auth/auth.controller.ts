@@ -10,6 +10,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,9 +21,11 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { LoginResponse, RefreshResponse } from './interfaces/auth-response.interface';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('auth')
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+@UseInterceptors(CacheInterceptor)
 export class AuthController {
   constructor(private authService: AuthService) {}
 

@@ -10,6 +10,10 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from 'src/mail/mail.module';
 import { PasswordReset } from './entities/password-reset.entity';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis from '@keyv/redis';
+import { Keyv } from 'keyv';
+import { CacheableMemory } from 'cacheable';
 
 @Module({
   imports: [
@@ -28,6 +32,22 @@ import { PasswordReset } from './entities/password-reset.entity';
       }),
       inject: [ConfigService],
     }),
+
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      isGlobal: true,
+      useFactory: async (configService: ConfigService) => {
+        return {
+          stores: [
+            new Keyv({
+              store: new CacheableMemory({ ttl: 60 * 1000, lruSize: 1000 })
+            }),
+            new KeyvRedis(configService.get<string>('REDIS_URL')),
+          ],
+        };
+      },
+      inject: [ConfigService],
+    })
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

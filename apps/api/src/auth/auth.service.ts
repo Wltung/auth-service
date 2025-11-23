@@ -2,7 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  UnauthorizedException,
+  Inject,
+  UnauthorizedException
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Tokens } from './interfaces/tokens.interface';
@@ -19,17 +20,19 @@ import { Repository } from 'typeorm';
 import { AuthResponse } from './interfaces/auth-response.interface';
 import { MailService } from 'src/mail/mail.service';
 import { PasswordReset } from './entities/password-reset.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {
-  // In production, use Redis for better performance
-  private accessTokenBlacklist = new Set<string>();
 
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     @InjectRepository(PasswordReset)
@@ -316,8 +319,8 @@ export class AuthService {
   }
 
   async logout(accessToken: string, refreshToken: string): Promise<void> {
-    // Blacklist the access token
-    this.accessTokenBlacklist.add(accessToken);
+    // Blacklist the access token until it expires
+    await this.blacklistAccessToken(accessToken);
 
     // Revoke the refresh token
     await this.refreshTokenRepository.update(
@@ -384,8 +387,27 @@ export class AuthService {
     }
   }
 
-  isAccessTokenBlacklisted(token: string): boolean {
-    return this.accessTokenBlacklist.has(token);
+  async isAccessTokenBlacklisted(token: string): Promise<boolean> {
+    const isBlacklisted = await this.cacheManager.get(token);
+    return !!isBlacklisted;
+  }
+
+  private async blacklistAccessToken(token: string): Promise<void> {
+    try {
+      const decoded = this.jwtService.decode(token) as JwtPayload;
+      
+      if (decoded && decoded.exp) {
+        const expiresIn = decoded.exp * 1000 - Date.now();
+        
+        if (expiresIn > 0) {
+          // Key: the token itself, Value: 'blacklisted', TTL: remaining time in ms
+          await this.cacheManager.set(token, 'blacklisted', expiresIn);
+        }
+      }
+    } catch (error) {
+      // It's better to log this error but not let it fail the whole logout process
+      console.error('Error while blacklisting token:', error);
+    }
   }
 
   private async blacklistUserAccessTokens(userId: string): Promise<void> {}

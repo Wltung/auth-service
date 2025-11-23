@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     
     // Check if token is blacklisted
-    if (this.authService.isAccessTokenBlacklisted(token)) {
+    if (await this.authService.isAccessTokenBlacklisted(token)) {
       throw new UnauthorizedException('Token đã bị thu hồi');
     }
 

@@ -20,7 +20,7 @@
     "paths": {
       "src/*": ["src/*"]
     },
-    "ignoreDeprecations": "6.0" // Ignore deprecated TypeScript features
+   // "ignoreDeprecations": "6.0" // Ignore deprecated TypeScript features
   },
   "ts-node": {
     "transpileOnly": true,
