@@ -1,4 +1,4 @@
-# 💰 AUTH-SERVICE CORE (Monorepo)
+# 🔐 AUTH-SERVICE CORE (Monorepo)
 
 [![pnpm](https://img.shields.io/badge/pnpm-9.0.0-blue.svg)](https://pnpm.io/)
 [![Powered by Turborepo](https://img.shields.io/badge/powered%20by-turborepo-blue.svg)](https://turbo.build/repo)
