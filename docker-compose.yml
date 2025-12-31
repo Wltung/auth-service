@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: finance-prod
+    container_name: auth-service
     build:
       context: .
       dockerfile: Dockerfile
