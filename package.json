@@ -1,5 +1,5 @@
 {
-    "name": "finance-manager",
+    "name": "auth-service",
     "version": "1.0.0",
     "description": "A comprehensive finance management application built with Turborepo monorepo structure",
     "private": true,

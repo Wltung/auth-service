@@ -1,27 +1,29 @@
-# 💰 FINANCE MANAGER WEB APPLICATION (Monorepo)
+# 💰 AUTH-SERVICE CORE (Monorepo)
 
 [![pnpm](https://img.shields.io/badge/pnpm-9.0.0-blue.svg)](https://pnpm.io/)
 [![Powered by Turborepo](https://img.shields.io/badge/powered%20by-turborepo-blue.svg)](https://turbo.build/repo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A comprehensive **Personal Finance Manager** web application built using a **Monorepo architecture** powered by Turborepo.
+An advanced, secure, and production-ready **authentication service boilerplate**. This project is built on a **Monorepo architecture** using Turborepo.
 
-**Current status:** The project has fully implemented **User Authentication**, including Sign Up, Login, Forgot Password, and Reset Password flows.
+**Current status:** The project has implemented a comprehensive **user authentication flow**, including **Registration, Login, Token Refresh, and Forgot/Reset Password**.
 
 ---
 
-## ✨ Features (Completed)
+## ✨ Key Features (Completed)
 
-- **JWT Authentication**
-  - Sign up, login, and protected routes using JSON Web Tokens (`@nestjs/jwt`)
-- **Forgot / Reset Password**
-  - Full flow including email-based password reset (DTOs + service logic included)
-- **Refresh Tokens**
-  - Maintain session without forcing re-login
-- **Secure Password Storage**
-  - Hashing using `bcrypt`
-- **API Documentation**
-  - Auto-generated API documentation using Swagger (`@nestjs/swagger`)
+- **Dual Token System (JWT)**
+  - Utilizes short-lived Access Tokens and long-lived Refresh Tokens to optimize security
+- **Refresh Token Rotation**
+  - The previous Refresh Token is immediately revoked (isRevoked) whenever a new token is issued to prevent session hijacking
+- **Security with Redis Blacklisting**
+  - Integrates Redis to blacklist Access Tokens upon user logout or password changes
+- **Secure Password Reset Mechanism**
+  - Uses hashed tokens (`SHA-256`) and delivers reset links via an Email Service (`Nodemailer`)
+- **Cookie Security**
+  - Refresh Tokens are stored securely in HttpOnly Cookies to mitigate XSS (Cross-Site Scripting) attacks
+- **Duplicate Management**
+  - Real-time availability checks for Email and Username
 
 ---
 
@@ -29,26 +31,28 @@ A comprehensive **Personal Finance Manager** web application built using a **Mon
 
 | Category     | Technology      | Description |
 |--------------|----------------|-------------|
-| **Monorepo** | Turborepo      | High-performance task runner |
-|              | pnpm           | Fast, disk-efficient package manager |
+| **Monorepo** | Turborepo & pnpm | Efficient multi-project management |
 | **Backend**  | NestJS v10     | Main backend framework (`apps/api`) |
 |              | TypeORM        | ORM for database interaction |
 |              | PostgreSQL     | Relational database (`pg`) |
 |              | Passport-JWT   | Authentication strategy for NestJS |
 |              | Swagger (OpenAPI) | Auto API docs |
-| **Frontend** | Next.js v15    | Main frontend framework (`apps/web`) |
-|              | React v19 (RC) | UI library |
+| **Caching**  | Redis          | Blacklisting and authentication acceleration via CacheManager |
+| **Frontend** | Next.js v15    | Modern UI powered by React v19 (`apps/web`) |
 |              | TypeScript     | Main language |
-|              | Chakra UI      | UI component library |
+| **UX/UI**    | Chakra UI      | UI component library |
 |              | Tailwind CSS   | Utility-first CSS styling |
-|              | React Hook Form + Yup | Form handling and validation |
-|              | Axios          | HTTP client for API calls |
 
 ---
 
 ## 📂 Project Structure
 
-This monorepo is managed by Turborepo and contains the following core applications:
+The project is managed by Turborepo and consists of the following core components:
+- `apps/api`: The NestJS Backend handling authentication logic and APIs.
+
+- `apps/web`: The Next.js Frontend integrating the user interface.
+
+- `packages/`: Contains shared configurations for ESLint, TypeScript, and database schemas.
 
 ---
 
@@ -77,8 +81,8 @@ cp apps/api/.env.example apps/api/.env
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/finance-manager.git](https://github.com/your-username/finance-manager.git)
-    cd finance-manager
+    git clone https://github.com/Wltung/auth-service.git
+    cd auth-service
     ```
 
 2.  **Configure Environment:**

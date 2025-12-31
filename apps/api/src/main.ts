@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import cookieParser from 'cookie-parser';
+const cookieParser = require('cookie-parser');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,8 +24,8 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
-    .setTitle('Finance Manager API')
-    .setDescription('API documentation for Finance Manager')
+    .setTitle('Auth Service API')
+    .setDescription('API documentation for Auth Service')
     .setVersion('1.0')
     .addBearerAuth(
       {
